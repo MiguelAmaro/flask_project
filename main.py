@@ -57,9 +57,6 @@ def api_get_data(search_term, page_title_count, page_number):
         }
     }
     '''
-    print("search: ", search_term)
-    print("page #: ", page_number)
-    print("titl per page: ", page_title_count)
     variables = {
         'search': search_term,
         'page': page_number,
@@ -88,10 +85,10 @@ def index():
 
     current_page_number   = session["current_page_number"]  
     current_page_maxcount = session["current_page_maxcount"]
-    submitted_title      = session["title"] 
-    submitted_lang       = session["lang"]
-    submitted_titlecount = session["title count"]
-    submitted_nav_ctrl   = 0 
+    submitted_title       = session["title"] 
+    submitted_lang        = session["lang"]
+    submitted_titlecount  = session["title count"]
+    submitted_nav_ctrl    = 0 
 
     # FORM
     form = SimpleForm()
@@ -128,5 +125,5 @@ def contact():
 # ENTRY POINT
 # ////////////////////////////////////////
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run() # debug=True
 

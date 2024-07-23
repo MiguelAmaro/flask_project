@@ -41,7 +41,7 @@
             {{form.page_nav}}
           </div>
 
-          <!-- PAGINATION CONTROL -->
+          <!-- PAGINATION CONTROL (jon fixed this)-->
           <label>Titles Per Page:</label>
           <span id="page-title_count">{{ form.page_title_count.data or submitted_form_data[2] }}</span><br>
           <input type="range" min="4" value="{{ form.page_title_count.data or submitted_form_data[2] }}" id="page-slider" name="page_title_count" oninput="updatePageTitleCount(this.value)">
