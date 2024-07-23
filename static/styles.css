@@ -1,0 +1,48 @@
+* {
+  margin: 0px;
+  padding: 0px;
+}
+.main_page {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-auto-rows: minmax(100px, 400px);
+  grid-template-areas:
+    "a b"
+    "c b"; 
+}
+/* margin: t r b l */
+.bar_title {
+  grid-area: c;
+  margin: 0 0 auto auto;
+  padding: 100px 10px 0 0;
+}
+.bar_form {
+  grid-area: a;
+  margin: 0 0 auto auto;
+  padding: 100px 10px 0 0;
+}
+.browser {
+  grid-area: b;
+  max-width: 600px;
+  max-height: 600px;
+  width: 600px;
+  height: 600px;
+  margin: 0 auto 0 0;
+}
+.anime_card_grid {
+  display: grid;
+  justify-content: space-between;
+  justify-items: center;
+  grid-template-columns: repeat(4, 24%);
+  row-gap: 10px;
+  box-sizing: border-box;
+}
+.anime_card {
+  font-size: 10px;
+  background-color: #f0f0f0;
+  width: 100%;
+  padding: 0px;
+  border: 1px solid #ccc;
+  text-align: center;
+  box-sizing: border-box;
+}

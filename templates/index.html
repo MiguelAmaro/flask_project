@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="main_page">
+
+      <div class="bar_title">
+        <h1>Hello World</h1>
+        <h2>Anime Titles:</h2>
+      </div>
+
+      <div class="bar_form">
+        {% include 'form.html' %}
+      </div>
+
+      <div class="browser"> 
+        <h1>Recommended</h1>
+        <div class="anime_card_grid">
+            {% for item in media %}
+              <div class="anime_card">
+                <h1>
+                  {% if data_entered and data_entered[1]=="native" %}
+                    {{  item.title.native }}
+                  {% else %}
+                    {{  item.title.romaji }}
+                  {% endif %}
+                </h1>
+                <img src="{{item.coverImage.medium}}"/>
+              </div>
+            {% endfor %}
+        </div>
+      </div> 
+    </div>
+    <script>
+      function updatePageValue(value) {
+          document.getElementById('page-value').textContent = value;
+      }
+    </script>
+
+</body>
+</html>

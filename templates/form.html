@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+      function updatePageValue(value) {
+        document.getElementById('page-value').textContent = value;
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+        <h1>Search</h1>
+        <form action="" method="post">
+          {{ form.csrf_token }}
+
+          <label>Title:</label>
+          {{ form.title(placeholder="Enter the title your interested in") }}
+          </br>
+          <div>
+            <label>Lang:</label>
+            {% for subfield in form.lang %}
+              <span class="radio-option">
+                {{ subfield }}
+                <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+              </span>
+            {% endfor %}
+          </div>
+          
+
+          <label>Titles Per Page:</label>
+          <span id="page-value">{{ form.titleperpage.data or data_entered[2] }}</span><br>
+          <input type="range" min="1" max="10" value="{{ form.titleperpage.data or page }}" id="page-slider" name="page" oninput="updatePageValue(this.value)">
+          
+          </br>
+          {{ form.submit() }}
+        </form>
+    </div>
+  </body>
+</html>
