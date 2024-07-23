@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="main_page">
+
+      <div class="bar_title">
+        <h1>Hello World</h1>
+        <h2>Contact Us:</h2>
+        <a href="{{url_for('index')}}">Go back to Main Page</a>
+        <a href="{{url_for('about')}}">About</a>
+      </div>
+
+      <div class="bar_form">
+      </div>
+
+      <div class="content"> 
+        <div style="margin-top: 200px;">
+          contact us at unreachableEmail@fiu.edu.
+        </div>
+      </div>
+    
+
+</body>
+</html>

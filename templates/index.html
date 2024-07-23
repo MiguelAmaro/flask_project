@@ -10,13 +10,15 @@
       <div class="bar_title">
         <h1>Hello World</h1>
         <h2>Anime Titles:</h2>
+        <a href="{{url_for('about')}}">About</a>
+        <a href="{{url_for('contact')}}">Contact</a>
       </div>
 
       <div class="bar_form">
         {% include 'form.html' %}
       </div>
 
-      <div class="browser"> 
+      <div class="content"> 
         <h1>Recommended</h1>
         <div class="anime_card_grid">
             {% for item in media_data %}

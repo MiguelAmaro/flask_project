@@ -15,9 +15,9 @@ app.config['SECRET_KEY'] = os.urandom(16)
 # CLASSES 
 # ////////////////////////////////////////
 class SimpleForm(FlaskForm):
-    title            = StringField('Title', [validators.DataRequired()])
+    title            = StringField('Title', []) # validators.DataRequired()
     lang             = RadioField("Lang", choices=[("native","jp"),("romaji", "en")])
-    page_nav         = SelectField('Page Navigation', choices=[(1, 'Next Page'), (-1, 'Previous Page')])
+    page_nav         = SelectField('Page Navigation', choices=[(1, 'Next Page'), (0, 'This Page'), (-1, 'Previous Page')])
     page_title_count = IntegerField("TitlePerPage", [validators.NumberRange(min=4, max=4*25)])
     submit           = SubmitField('Submit')
 
@@ -79,29 +79,38 @@ def index():
         session['current_page_number']   = 0
     if 'current_page_maxcount' not in session:
         session['current_page_maxcount'] = 1
+    if 'title' not in session:
+        session['title']   = ""
+    if 'lang' not in session:
+        session['lang'] = "romaji"
+    if 'title count' not in session:
+        session['title count'] = 1
 
-    submitted_title      = None
-    submitted_lang       = "native"
-    submitted_titlecount = 1
+    current_page_number   = session["current_page_number"]  
+    current_page_maxcount = session["current_page_maxcount"]
+    submitted_title      = session["title"] 
+    submitted_lang       = session["lang"]
+    submitted_titlecount = session["title count"]
     submitted_nav_ctrl   = 0 
 
     # FORM
     form = SimpleForm()
     if request.method == "POST":
-        submitted_title      = form.title.data
+        submitted_title      = form.title.data if form.title.data else None
         submitted_lang       = form.lang.data
         submitted_nav_ctrl   = int(form.page_nav.data) if form.page_nav.data else 0
         submitted_titlecount = form.page_title_count.data
     
+
+    # NOTE(): moved because theres a delay cause page number is updated after the api call
+    current_page_number    = clamp(current_page_number + submitted_nav_ctrl, 1, current_page_maxcount)
+    
     # API CALL
-    current_page_number   = session["current_page_number"]  
-    current_page_maxcount = session["current_page_maxcount"] 
     api_data        = api_get_data(submitted_title, submitted_titlecount, current_page_number); 
     form_data       = [submitted_title, submitted_lang, submitted_titlecount]
     media_data      = api_data["data"]["Page"]["media"]
     pagination_data = api_data["data"]["Page"]["pageInfo"]
     current_page_maxcount  = pagination_data["total"] if pagination_data else 1
-    current_page_number    = clamp(current_page_number + submitted_nav_ctrl, 1, current_page_maxcount)
     session["current_page_number"]   = current_page_number
     session["current_page_maxcount"] = current_page_maxcount
     # RENDER
@@ -109,11 +118,11 @@ def index():
 
 @app.route('/about')
 def about():
-    return 'We are learning about Web services and Web apps.'
+    return render_template("about.html") 
 
 @app.route('/contact')
 def contact():
-    return 'You can contact us at gregory@cs.fiu.edu.'
+    return render_template("contact.html") 
 
 # ////////////////////////////////////////
 # ENTRY POINT

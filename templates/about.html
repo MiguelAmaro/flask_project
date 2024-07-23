@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="main_page">
+
+      <div class="bar_title">
+        <h1>Hello World</h1>
+        <h2>About Us:</h2>
+        <a href="{{url_for('index')}}">Go back to Main Page</a>
+        <a href="{{url_for('contact')}}">Contact</a>
+      </div>
+
+      <div class="bar_form">
+      </div>
+
+      <div class="content"> 
+        <div style="margin-top: 200px;">
+          We are weebs.
+        </div>
+      </div>
+    
+
+</body>
+</html>
