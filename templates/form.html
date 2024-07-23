@@ -3,8 +3,8 @@
   <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <script>
-      function updatePageValue(value) {
-        document.getElementById('page-value').textContent = value;
+      function updatePageTitleCount(count) {
+        document.getElementById('page-title_count').textContent = count;
       }
     </script>
   </head>
@@ -14,25 +14,40 @@
         <form action="" method="post">
           {{ form.csrf_token }}
 
+          <!-- (STRING) TITLE SEARCH -->
           <label>Title:</label>
           {{ form.title(placeholder="Enter the title your interested in") }}
           </br>
+
+          <!-- TITLE LANGUAGE SELECTION -->
           <div>
             <label>Lang:</label>
-            {% for subfield in form.lang %}
-              <span class="radio-option">
-                {{ subfield }}
-                <label for="{{ subfield.id }}">{{ subfield.label.text }}</label>
+            {% for lang_option in form.lang %}
+              <span>
+                {{ lang_option }}
+                <label for="{{ lang_option.id }}">{{ lang_option.label.text }}</label>
               </span>
             {% endfor %}
           </div>
-          
 
-          <label>Titles Per Page:</label>
-          <span id="page-value">{{ form.titleperpage.data or data_entered[2] }}</span><br>
-          <input type="range" min="1" max="10" value="{{ form.titleperpage.data or page }}" id="page-slider" name="page" oninput="updatePageValue(this.value)">
+          <!-- PAGE NAVIGATION -->
+          <br>
+          <div><label>Current Page: </label>{{ pagination_data.currentPage}}</div>
+          <div><label>Total Pages: </label>{{ pagination_data.total}}</div>
           
+          <br>
+          <div>
+            <label>Navigation:</label>
+            {{form.page_nav}}
+          </div>
+
+          <!-- PAGINATION CONTROL -->
+          <label>Titles Per Page:</label>
+          <span id="page-title_count">{{ form.page_title_count.data or submitted_form_data[2] }}</span><br>
+          <input type="range" min="4" value="{{ form.page_title_count.data or submitted_form_data[2] }}" id="page-slider" name="page_title_count" oninput="updatePageTitleCount(this.value)">
           </br>
+
+
           {{ form.submit() }}
         </form>
     </div>

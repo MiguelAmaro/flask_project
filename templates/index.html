@@ -19,10 +19,10 @@
       <div class="browser"> 
         <h1>Recommended</h1>
         <div class="anime_card_grid">
-            {% for item in media %}
+            {% for item in media_data %}
               <div class="anime_card">
                 <h1>
-                  {% if data_entered and data_entered[1]=="native" %}
+                  {% if submitted_form_data and submitted_form_data[1]=="native" %}
                     {{  item.title.native }}
                   {% else %}
                     {{  item.title.romaji }}
@@ -34,11 +34,7 @@
         </div>
       </div> 
     </div>
-    <script>
-      function updatePageValue(value) {
-          document.getElementById('page-value').textContent = value;
-      }
-    </script>
+    
 
 </body>
 </html>
