@@ -6,6 +6,13 @@ import json
 import os
 
 # ////////////////////////////////////////
+# GROUP:
+
+# MIGUEL AMARO
+# JON LOPEZ
+# ////////////////////////////////////////
+
+# ////////////////////////////////////////
 # GLOBALS 
 # ////////////////////////////////////////
 app = Flask(__name__)
@@ -16,20 +23,22 @@ app.config['SECRET_KEY'] = os.urandom(16)
 # ////////////////////////////////////////
 class SimpleForm(FlaskForm):
     title            = StringField('Title', []) # validators.DataRequired()
-    lang             = RadioField("Lang", choices=[("native","jp"),("romaji", "en")])
-    page_nav         = SelectField('Page Navigation', choices=[(1, 'Next Page'), (0, 'This Page'), (-1, 'Previous Page')])
+    lang             = RadioField("Lang", choices=[("native", "jp"),("romaji", "en")])
+    page_nav         = SelectField('Page Navigation', choices=[(1, 'Next Page'), (0, 'This Page'), (-1, 'Previous Page')], default='0')
     page_title_count = IntegerField("TitlePerPage", [validators.NumberRange(min=4, max=4*25)])
     submit           = SubmitField('Submit')
 
 # ////////////////////////////////////////
 # FUNCTIONS
 # ////////////////////////////////////////
+
+# ////////////////////////////////////////
+# HELPERS ////////////////////////////////
 def clamp(value, min_value, max_value):
     value = min(value, max_value)
     value = max(value, min_value)
     return value
-# ////////////////////////////////////////
-# HELPERS ////////////////////////////////
+
 def api_get_data(search_term, page_title_count, page_number):
     grapql_query = '''
     query ($id: Int, $page: Int, $perPage: Int, $search: String) {
@@ -72,19 +81,22 @@ def api_get_data(search_term, page_title_count, page_number):
 # ROUTES /////////////////////////////////
 @app.route("/", methods=['GET', 'POST'])
 def index():  
+    # INIT SESSION STATE
     if 'current_page_number' not in session:
-        session['current_page_number']   = 0
-    if 'current_page_maxcount' not in session:
-        session['current_page_maxcount'] = 1
+        session['current_page_number'] = 1
+    if 'last_page_number' not in session:
+        session['last_page_number']    = 1
     if 'title' not in session:
-        session['title']   = ""
+        session['title']   = None
     if 'lang' not in session:
         session['lang'] = "romaji"
     if 'title count' not in session:
-        session['title count'] = 1
+        session['title count'] = 16
 
+    # READ LAST SESSION STATE
+    should_clear_page_number = False
     current_page_number   = session["current_page_number"]  
-    current_page_maxcount = session["current_page_maxcount"]
+    last_page_number      = session["last_page_number"]  
     submitted_title       = session["title"] 
     submitted_lang        = session["lang"]
     submitted_titlecount  = session["title count"]
@@ -93,23 +105,32 @@ def index():
     # FORM
     form = SimpleForm()
     if request.method == "POST":
-        submitted_title      = form.title.data if form.title.data else None
+        new_title = form.title.data if len(form.title.data)>0 else None
+        should_clear_page_number = submitted_title != new_title 
+        
+        submitted_title      = new_title
         submitted_lang       = form.lang.data
         submitted_nav_ctrl   = int(form.page_nav.data) if form.page_nav.data else 0
         submitted_titlecount = form.page_title_count.data
-    
 
-    # NOTE(): moved because theres a delay cause page number is updated after the api call
-    current_page_number    = clamp(current_page_number + submitted_nav_ctrl, 1, current_page_maxcount)
-    
+    # COMPUTE NEW PAGE NUMBER
+    current_page_number = clamp(current_page_number + submitted_nav_ctrl, 1, last_page_number)
+    current_page_number = 1 if should_clear_page_number else current_page_number
+
     # API CALL
-    api_data        = api_get_data(submitted_title, submitted_titlecount, current_page_number); 
-    form_data       = [submitted_title, submitted_lang, submitted_titlecount]
-    media_data      = api_data["data"]["Page"]["media"]
-    pagination_data = api_data["data"]["Page"]["pageInfo"]
-    current_page_maxcount  = pagination_data["total"] if pagination_data else 1
-    session["current_page_number"]   = current_page_number
-    session["current_page_maxcount"] = current_page_maxcount
+    api_data         = api_get_data(submitted_title, submitted_titlecount, current_page_number); 
+    media_data       = api_data["data"]["Page"]["media"]
+    pagination_data  = api_data["data"]["Page"]["pageInfo"]
+    form_data        = [submitted_title, submitted_lang, submitted_titlecount]
+    last_page_number = pagination_data["lastPage"]
+    
+    # UPDATE SESSION STATE
+    session["title"]               = submitted_title 
+    session["lang"]                = submitted_lang 
+    session["title count"]         = submitted_titlecount
+    session["current_page_number"] = current_page_number
+    session["last_page_number"]    = last_page_number
+
     # RENDER
     return render_template("index.html", media_data=media_data, pagination_data=pagination_data, submitted_form_data=form_data, form=form)
 
@@ -125,5 +146,6 @@ def contact():
 # ENTRY POINT
 # ////////////////////////////////////////
 if __name__ == '__main__':
-    app.run() # debug=True
+    app.run()
+    #app.run(debug=True)
 
